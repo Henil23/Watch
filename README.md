@@ -7,13 +7,13 @@
 **Development Environment:** Xcode  
 **Project Type:** Advanced systems programming / macOS utility  
 **Initial Status:** Architecture & MVP Definition  
-**Working Name:** SystemLens
+**Working Name:** Watch
 
 ---
 
 # 1. Project Vision
 
-SystemLens is a macOS system-observability and adaptive network-control utility designed to answer three questions:
+Watch is a macOS system-observability and adaptive network-control utility designed to answer three questions:
 
 1. **What is my Mac doing?**
 2. **Why is it happening?**
@@ -27,7 +27,7 @@ Traditional monitoring applications primarily display current metrics:
 - disk activity
 - running processes
 
-SystemLens will go beyond displaying numbers.
+Watch will go beyond displaying numbers.
 
 It will maintain historical system state, correlate events across resources and processes, identify abnormal behaviour, create system "incidents", and eventually enforce user-defined network policies.
 
@@ -46,7 +46,7 @@ ACT
 Example:
 
 ```text
-SystemLens Incident #142
+Watch Incident #142
 
 13:42:08
 
@@ -82,7 +82,7 @@ Duration:
 6m 42s
 ```
 
-Eventually SystemLens may provide an action:
+Eventually Watch may provide an action:
 
 ```text
 Suggested Action
@@ -99,7 +99,7 @@ connected through a mobile hotspot.
 
 # 2. Core Product Idea
 
-SystemLens combines two traditionally separate categories of software.
+Watch combines two traditionally separate categories of software.
 
 ### System observability
 
@@ -187,7 +187,7 @@ notify user
 
 ## Primary goals
 
-SystemLens should eventually be capable of:
+Watch should eventually be capable of:
 
 - monitoring system-wide CPU utilisation
 - monitoring memory usage
@@ -213,7 +213,7 @@ The following are deliberately excluded from the initial project.
 
 ## No arbitrary bandwidth throttling
 
-SystemLens V1 will **not promise**:
+Watch V1 will **not promise**:
 
 ```text
 Dropbox → exactly 500 KB/s
@@ -238,7 +238,7 @@ rather than arbitrary bandwidth limits.
 
 ## No kernel extension
 
-SystemLens will not rely on legacy kernel extensions.
+Watch will not rely on legacy kernel extensions.
 
 Architecture should remain in user space using supported macOS APIs and system extensions.
 
@@ -246,7 +246,7 @@ Architecture should remain in user space using supported macOS APIs and system e
 
 ## No antivirus functionality
 
-SystemLens is not intended to:
+Watch is not intended to:
 
 - detect malware
 - scan binaries
@@ -257,7 +257,7 @@ SystemLens is not intended to:
 
 ## No packet payload surveillance
 
-SystemLens is primarily interested in:
+Watch is primarily interested in:
 
 ```text
 application
@@ -288,7 +288,7 @@ Content Filter Providers can receive network flows and determine whether traffic
 
 Each `NEFilterFlow` corresponds to a network connection opened by an application.
 
-SystemLens will eventually use this supported mechanism for network enforcement.
+Watch will eventually use this supported mechanism for network enforcement.
 
 
 Network content filtering on macOS can be deployed using a system extension. Apple documents support for macOS content-filter system extensions beginning with macOS 10.15.
@@ -354,7 +354,7 @@ This avoids coupling the engine to one API.
 
 ```text
 ┌───────────────────────────────────────────────┐
-│                 SystemLens.app                │
+│                 Watch.app                │
 │                                               │
 │                  SwiftUI UI                   │
 └──────────────────────┬────────────────────────┘
@@ -362,7 +362,7 @@ This avoids coupling the engine to one API.
                        │ IPC
                        ▼
 ┌───────────────────────────────────────────────┐
-│                SystemLens Core                │
+│                Watch Core                │
 │                    C++                        │
 │                                               │
 │  ┌────────────┐   ┌─────────────┐             │
@@ -399,7 +399,7 @@ This avoids coupling the engine to one API.
 The backend should be divided into the following subsystems.
 
 ```text
-SystemLens Core
+Watch Core
 
 ├── Platform
 │
@@ -665,7 +665,7 @@ Network metrics will be integrated separately because attribution may use differ
 
 # 15. Process Tree
 
-SystemLens should maintain parent-child relationships.
+Watch should maintain parent-child relationships.
 
 Example:
 
@@ -755,7 +755,7 @@ The scheduling should use steady-clock timing to reduce drift.
 
 # 17. Historical Metrics
 
-SystemLens is fundamentally historical.
+Watch is fundamentally historical.
 
 Current metrics alone are insufficient.
 
@@ -1048,7 +1048,7 @@ Current:
 74%
 ```
 
-SystemLens can identify:
+Watch can identify:
 
 ```text
 significant deviation from baseline
@@ -1340,24 +1340,24 @@ Network filtering should remain isolated from the core engine.
 Recommended targets inside Xcode:
 
 ```text
-SystemLens
+Watch
 │
-├── SystemLensApp
+├── WatchApp
 │      SwiftUI
 │
-├── SystemLensCore
+├── WatchCore
 │      C++
 │
-├── SystemLensBridge
+├── WatchBridge
 │      Objective-C++
 │
-├── SystemLensNetworkExtension
+├── WatchNetworkExtension
 │      Swift / NetworkExtension
 │
-├── SystemLensCLI
+├── WatchCLI
 │      C++
 │
-└── SystemLensTests
+└── WatchTests
 ```
 
 ---
@@ -1374,11 +1374,11 @@ Example:
 SwiftUI
    │
    ▼
-SystemLensBridge
+WatchBridge
 Objective-C++
    │
    ▼
-SystemLensCore
+WatchCore
 C++
 ```
 
@@ -1393,13 +1393,13 @@ Do not start by making a beautiful GUI.
 Initial development should happen through:
 
 ```text
-SystemLensCLI
+WatchCLI
 ```
 
 Example:
 
 ```bash
-systemlens status
+Watch status
 ```
 
 Output:
@@ -1416,7 +1416,7 @@ Disk Write     4.7 MB/s
 Then:
 
 ```bash
-systemlens top
+Watch top
 ```
 
 ```text
@@ -1434,14 +1434,14 @@ PID    PROCESS              CPU       MEMORY
 Eventually:
 
 ```text
-systemlens status
-systemlens top
-systemlens ps
-systemlens incidents
-systemlens incident <id>
-systemlens network
-systemlens rules
-systemlens profiles
+Watch status
+Watch top
+Watch ps
+Watch incidents
+Watch incident <id>
+Watch network
+Watch rules
+Watch profiles
 ```
 
 But only:
@@ -1461,7 +1461,7 @@ are necessary initially.
 Recommended:
 
 ```text
-SystemLens/
+Watch/
 │
 ├── README.md
 ├── PROJECT.md
@@ -1473,7 +1473,7 @@ SystemLens/
 ├── core/
 │   │
 │   ├── include/
-│   │   └── systemlens/
+│   │   └── Watch/
 │   │
 │   └── src/
 │
@@ -1516,7 +1516,7 @@ SystemLens/
 Everything in the core should use:
 
 ```cpp
-namespace systemlens
+namespace Watch
 {
 }
 ```
@@ -1524,12 +1524,12 @@ namespace systemlens
 Subnamespaces:
 
 ```cpp
-systemlens::metrics
-systemlens::process
-systemlens::storage
-systemlens::policy
-systemlens::network
-systemlens::platform
+Watch::metrics
+Watch::process
+Watch::storage
+Watch::policy
+Watch::network
+Watch::platform
 ```
 
 ---
@@ -1768,7 +1768,7 @@ This allows deterministic testing.
 
 # 45. Performance Targets
 
-SystemLens itself must not become the problem it monitors.
+Watch itself must not become the problem it monitors.
 
 Initial targets:
 
@@ -1792,7 +1792,7 @@ These are design targets rather than strict guarantees during early development.
 
 # 46. Privacy Principles
 
-SystemLens should follow:
+Watch should follow:
 
 ```text
 local-first
@@ -1931,7 +1931,7 @@ notifications
 
 ---
 
-## V1.0 — SystemLens
+## V1.0 — Watch
 
 Expected feature set:
 
@@ -1996,11 +1996,11 @@ Build the observability engine first.
 The first meaningful executable should produce this:
 
 ```bash
-$ systemlens
+$ Watch
 ```
 
 ```text
-SystemLens 0.1-dev
+Watch 0.1-dev
 
 System
 --------------------------------
@@ -2063,7 +2063,7 @@ SystemMonitor
 ```cpp
 #pragma once
 
-namespace systemlens::metrics
+namespace Watch::metrics
 {
 
 struct CpuMetrics
@@ -2130,15 +2130,15 @@ private:
 Create an Xcode project containing:
 
 ```text
-SystemLensCore
-SystemLensCLI
-SystemLensTests
+WatchCore
+WatchCLI
+WatchTests
 ```
 
 Initially ignore:
 
 ```text
-SystemLensApp
+WatchApp
 NetworkExtension
 Bridge
 ```
@@ -2169,7 +2169,7 @@ Configure C++20.
 
 ## Task 3
 
-Create `SystemLensCore`.
+Create `WatchCore`.
 
 ## Task 4
 
@@ -2202,7 +2202,7 @@ Refresh metrics continuously.
 At the end:
 
 ```text
-SystemLens CLI system monitor working.
+Watch CLI system monitor working.
 ```
 
 Do not introduce SQLite yet.
@@ -2224,7 +2224,7 @@ top command
 Result:
 
 ```bash
-systemlens top
+Watch top
 ```
 
 ---
@@ -2244,7 +2244,7 @@ process samples
 Then implement:
 
 ```bash
-systemlens history
+Watch history
 ```
 
 ---
@@ -2297,7 +2297,7 @@ Create a standalone test Network Extension.
 Purpose:
 
 ```text
-Can SystemLens observe a flow?
+Can Watch observe a flow?
 
 Can it identify the originating application?
 
@@ -2420,7 +2420,7 @@ Benchmark collectors and adapt sampling intervals.
 
 The most important rule for this project:
 
-> **The core should describe what SystemLens wants to know, not how macOS happens to provide it.**
+> **The core should describe what Watch wants to know, not how macOS happens to provide it.**
 
 Bad:
 
@@ -2437,7 +2437,7 @@ spread throughout the application.
 Better:
 
 ```text
-SystemLens
+Watch
       │
       ▼
 ICpuProvider
@@ -2530,7 +2530,7 @@ connection filtering
 
 ---
 
-# 65. What Makes SystemLens Worth Building
+# 65. What Makes Watch Worth Building
 
 The project should not be judged by:
 
@@ -2584,28 +2584,28 @@ instead of requiring the user to manually shut down background applications.
 
 # 66. Success Criteria
 
-The project is successful when SystemLens can reliably demonstrate this scenario:
+The project is successful when Watch can reliably demonstrate this scenario:
 
 ```text
 1. User works normally.
 
-2. SystemLens records resource history.
+2. Watch records resource history.
 
 3. An application begins heavy activity.
 
 4. CPU/network/disk usage spikes.
 
-5. SystemLens identifies the responsible processes.
+5. Watch identifies the responsible processes.
 
-6. SystemLens creates an incident.
+6. Watch creates an incident.
 
-7. User opens SystemLens later.
+7. User opens Watch later.
 
 8. User sees exactly when the event occurred.
 
 9. User sees which applications contributed.
 
-10. SystemLens explains the likely relationship.
+10. Watch explains the likely relationship.
 
 11. User switches to a constrained network.
 
@@ -2614,7 +2614,7 @@ The project is successful when SystemLens can reliably demonstrate this scenario
 13. Selected background applications are prevented
     from creating network traffic.
 
-14. SystemLens records why each policy was applied.
+14. Watch records why each policy was applied.
 ```
 
 That is the target product.
@@ -2636,7 +2636,7 @@ ML
 Start with:
 
 ```text
-SystemLensCore
+WatchCore
      │
      ├── CpuCollector
      ├── MemoryCollector
@@ -2646,7 +2646,7 @@ SystemLensCore
 and make this work:
 
 ```bash
-$ systemlens
+$ Watch
 
 CPU:       24.8%
 Memory:    8.7 / 16 GB
@@ -2657,6 +2657,6 @@ Then build upward.
 
 The first engineering question should therefore be:
 
-> **How do we design and implement `CpuCollector` correctly on macOS while keeping the rest of SystemLens independent of Mach?**
+> **How do we design and implement `CpuCollector` correctly on macOS while keeping the rest of Watch independent of Mach?**
 
 That is where implementation begins.
