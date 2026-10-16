@@ -3,4 +3,8 @@ project(Watch)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Watch main.cpp)
+add_executable(Watch src/main.cpp
+        src/CpuCollector.cpp
+        src/CpuCollector.h
+        src/MemoryCollector.cpp
+        src/MemoryCollector.h)
