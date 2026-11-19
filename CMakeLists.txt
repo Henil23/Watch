@@ -7,4 +7,6 @@ add_executable(Watch src/main.cpp
         src/CpuCollector.cpp
         src/CpuCollector.h
         src/MemoryCollector.cpp
-        src/MemoryCollector.h)
+        src/MemoryCollector.h
+        src/ProcessEnumerator.h
+        src/ProcessEnumerator.cpp)
