@@ -8,93 +8,78 @@
 #include "CpuCollector.h"
 #include "MemoryCollector.h"
 #include "ProcessEnumerator.h"
+#include "ProcessCpuCollector.h"
 
 int main()
 {
-    // Initialize the macOS system resource collectors.
     CpuCollector cpuCollector;
     MemoryCollector memoryCollector;
     ProcessEnumerator processEnumerator;
+    ProcessCpuCollector processCpuCollector;
 
-    std::cout << "Watch started.\n\n";
+    constexpr double GiB = 1024.0 * 1024.0 * 1024.0;
+    constexpr double MiB = 1024.0 * 1024.0;
 
-    // Continuously monitor system resources every second.
+    std::cout << "Watch started.\n";
+
     while (true)
     {
-        // Collect system-wide CPU and memory statistics.
-        const CpuMetrics cpu = cpuCollector.sample();
-        const MemoryMetrics memory = memoryCollector.sample();
+        // Collect system-wide CPU and RAM information.
+        const auto cpu = cpuCollector.sample();
+        const auto memory = memoryCollector.sample();
 
-        // Convert memory values from bytes to GiB.
-        constexpr double bytesPerGiB = 1024.0 * 1024.0 * 1024.0;
-
-        const double usedGB =
-            static_cast<double>(memory.usedBytes) / bytesPerGiB;
-
-        const double totalGB =
-            static_cast<double>(memory.totalBytes) / bytesPerGiB;
-
-        // Display system-wide resource usage.
-        std::cout << "\n========== WATCH ==========\n";
-
-        std::cout << std::fixed << std::setprecision(2);
-
-        std::cout << "CPU Usage: " << cpu.totalPercent << "%\n"
-                  << "Memory: " << usedGB << " / "
-                  << totalGB << " GiB\n";
-
-        // Retrieve all running processes from macOS.
+        // Discover running processes and update their CPU usage.
         auto processes = processEnumerator.enumerate();
+        processCpuCollector.update(processes);
 
-        std::cout << "Running Processes: "
-                  << processes.size() << "\n";
-
-        // Sort processes in descending order of resident memory usage.
+        // Rank processes by CPU utilization.
         std::sort(
             processes.begin(),
             processes.end(),
             [](const ProcessInfo& a, const ProcessInfo& b)
             {
-                return a.residentMemoryBytes > b.residentMemoryBytes;
+                return a.cpuPercent > b.cpuPercent;
             }
         );
 
-        // Display the 10 processes consuming the most resident memory.
-        std::cout << "\nTop 10 Processes by Memory\n";
-        std::cout << "---------------------------------------------\n";
+        std::cout << "\n========== WATCH ==========\n";
+
+        std::cout << std::fixed << std::setprecision(2);
+
+        std::cout << "System CPU: " << cpu.totalPercent << "%\n";
+        std::cout << "Memory: "
+                  << memory.usedBytes / GiB << " / "
+                  << memory.totalBytes / GiB << " GiB\n";
+
+        std::cout << "Processes: " << processes.size() << "\n\n";
 
         std::cout << std::left
-                  << std::setw(10) << "PID"
-                  << std::setw(25) << "PROCESS"
-                  << "MEMORY (MiB)\n";
+                  << std::setw(8)  << "PID"
+                  << std::setw(32) << "PROCESS"
+                  << std::setw(12) << "CPU (%)"
+                  << "RAM (MiB)\n";
 
-        std::cout << "---------------------------------------------\n";
+        std::cout << std::string(65, '-') << '\n';
 
-        const std::size_t displayCount =
+        const std::size_t count =
             std::min(processes.size(), std::size_t{10});
 
-        constexpr double bytesPerMiB = 1024.0 * 1024.0;
-
-        for (std::size_t i = 0; i < displayCount; ++i)
+        for (std::size_t i = 0; i < count; ++i)
         {
-            const ProcessInfo& process = processes[i];
+            const auto& process = processes[i];
 
-            const double memoryMB =
-                static_cast<double>(process.residentMemoryBytes) /
-                bytesPerMiB;
+            // Truncate long names to keep columns aligned.
+            const std::string name = process.name.substr(0, 30);
 
             std::cout << std::left
-                      << std::setw(10) << process.pid
-                      << std::setw(25) << process.name
-                      << std::fixed << std::setprecision(1)
-                      << memoryMB << '\n';
+                      << std::setw(8) << process.pid
+                      << std::setw(32) << name
+                      << std::setw(12) << process.cpuPercent
+                      << process.residentMemoryBytes / MiB
+                      << '\n';
         }
 
-        std::cout << "=============================================\n";
-
-        // Wait one second before the next sampling cycle.
+        // Wait approximately one second before collecting again.
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-
-    return 0;
 }

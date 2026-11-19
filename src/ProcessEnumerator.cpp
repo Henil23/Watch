@@ -84,9 +84,18 @@ vector<ProcessInfo> ProcessEnumerator::enumerate() const
   );
 
   // Some processes may restrict access to their information.
-  if (bytesReturned == sizeof(taskInfo)) {
+  if (bytesReturned == sizeof(taskInfo))
+  {
+   // Collect memory and cumulative CPU time in one API call.
    info.residentMemoryBytes = taskInfo.pti_resident_size;
+
+   info.cpuTimeTicks =
+       taskInfo.pti_total_user +
+       taskInfo.pti_total_system;
+
+   info.hasTaskInfo = true;
   }
+
   processes.push_back(info);
  }
 
